@@ -89,6 +89,10 @@ class App extends Component {
       this.setState({ posY: ++posY, step: ++step });
     } else {
       //console.log(temp);
+      if (posY == 0) {
+        clearInterval(this.timerId);
+        alert('GAME OVER');
+      }
       this.setState({ posY: 0, board: [...temp], posX: 4 });
     }
   }
@@ -111,7 +115,7 @@ class App extends Component {
     document.addEventListener('keydown', (e) => {
       this.move(e);
     })
-    setInterval( () => {
+    this.timerId = setInterval( () => {
       this.down();
       this.draw();
     }, 200);
