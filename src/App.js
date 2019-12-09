@@ -109,7 +109,19 @@ class App extends Component {
     if (isCollide == 'false') {
       this.setState({ posX: posX+dX });
     }
-  } 
+  }
+
+  check = () => {
+    var { board, width, height } = this.state;
+    var emptyRow = new Array(10).fill('1').join('');
+    var newBoard = board.filter((el) => {
+      return el.join('') !== emptyRow;
+    })
+    while (newBoard.length < height) {
+      newBoard.unshift(new Array(10).fill(0));
+    }
+    this.setState({ board: newBoard });
+  }
 
   componentDidMount = () => {
     document.addEventListener('keydown', (e) => {
@@ -118,7 +130,8 @@ class App extends Component {
     this.timerId = setInterval( () => {
       this.down();
       this.draw();
-    }, 200);
+      this.check();
+    }, 100);
   }
 
   render() {
