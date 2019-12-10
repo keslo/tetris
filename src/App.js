@@ -34,11 +34,24 @@ class App extends Component {
       width: 10,
       height: 20,
       step: 0,
-      piece: [
-        //[0,0,0,0],
-        [1,1],
-        [1,1]
-        //[0,0,0,0]
+      piece: [],
+      pieceVar: 0,
+      pieceType: 0,
+      pieces: [
+        [ // stick
+          [
+            [0,0,0,0],
+            [1,1,1,1],
+            [0,0,0,0],
+            [0,0,0,0]
+          ],
+          [
+            [0,1,0,0],
+            [0,1,0,0],
+            [0,1,0,0],
+            [0,1,0,0]
+          ]
+        ]
       ]
     }
   }
@@ -71,14 +84,16 @@ class App extends Component {
     let temp = JSON.parse(JSON.stringify(board)); 
     for (var y=0; y<piece.length; y++) {
       for (var x=0; x<piece[y].length; x++) {
-        //console.log(arr[y+posY][x+posX]);
-        //console.log(arr);
-        if (temp[y+posY][x+posX] != undefined) {
-          temp[y+posY][x+posX] = piece[y][x]; 
+        //console.log(temp[y+posY][x+posX]);
+        //console.log('y=' +piece.length, '; x=' +piece[y].length);
+        //console.log(temp[y+posY][x+posX]);
+        if (temp[y+posY] != undefined) {
+          if (temp[y+posY][x+posX] != undefined) {
+            temp[y+posY][x+posX] = board[y+posY][x+posX] ? 1 : piece[y][x];
+          } 
         }
       }
     }
-    //console.log('выводим temp', temp);
     this.setState({ temp });
   }
 
@@ -92,7 +107,7 @@ class App extends Component {
       //console.log(temp);
       if (posY == 0) {
         clearInterval(this.timerId);
-        alert('GAME OVER');
+        //alert('GAME OVER');
       }
       this.setState({ posY: 0, board: [...temp], posX: 4 });
     }
@@ -123,18 +138,31 @@ class App extends Component {
       newBoard.unshift(new Array(10).fill(0));
       incScore++;
     }
+    console.log(incScore);
     this.setState({ board: newBoard, score: score+incScore });
+  }
+
+  rotate = (e) => {
+    if (e.keyCode == '38' ) { // Up
+      e.preventDefault();
+      var { pieceVar, pieceType, piece, pieces } =  this.state;
+      var newVar = ++pieceVar % pieces[pieceType].length;
+      console.log(newVar);
+      this.setState({ pieceVar: newVar, piece: pieces[pieceType][newVar] });
+    }
   }
 
   componentDidMount = () => {
     document.addEventListener('keydown', (e) => {
       this.move(e);
+      this.rotate(e);
     })
+    this.setState({ piece: this.state.pieces[this.state.pieceType][this.state.pieceVar].slice() });
     this.timerId = setInterval( () => {
       this.down();
       this.draw();
       this.check();
-    }, 100);
+    }, 500);
   }
 
   render() {
