@@ -28,6 +28,7 @@ class App extends Component {
         [0,0,0,0,0,0,0,0,0,0]
       ],
       temp: [],
+      score: 0,
       posX: 4,
       posY: 0,
       width: 10,
@@ -112,15 +113,17 @@ class App extends Component {
   }
 
   check = () => {
-    var { board, width, height } = this.state;
+    var { board, width, height, score } = this.state;
     var emptyRow = new Array(10).fill('1').join('');
+    var incScore = 0;
     var newBoard = board.filter((el) => {
       return el.join('') !== emptyRow;
     })
     while (newBoard.length < height) {
       newBoard.unshift(new Array(10).fill(0));
+      incScore++;
     }
-    this.setState({ board: newBoard });
+    this.setState({ board: newBoard, score: score+incScore });
   }
 
   componentDidMount = () => {
@@ -135,7 +138,7 @@ class App extends Component {
   }
 
   render() {
-    var { temp } = this.state;
+    var { temp, score } = this.state;
     var html = temp.map((row,i) => {
       return <div className="row" key={i}>
         { row.map((col, j) => <div className={ col ? "brick on" : "brick" } key={j}></div> ) }
@@ -143,6 +146,7 @@ class App extends Component {
     })
     return (
       <div className="App">
+        <h2>Score: { score }</h2>
         { html }
       </div>
     )
