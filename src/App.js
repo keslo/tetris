@@ -147,8 +147,9 @@ class App extends Component {
       e.preventDefault();
       var { pieceVar, pieceType, piece, pieces } =  this.state;
       var newVar = ++pieceVar % pieces[pieceType].length;
-      console.log(newVar);
-      this.setState({ pieceVar: newVar, piece: pieces[pieceType][newVar] });
+      if (this.collide(0, 0, pieces[pieceType][newVar]) == 'false') {
+        this.setState({ pieceVar: newVar, piece: pieces[pieceType][newVar] });
+      }
     }
   }
 
