@@ -127,7 +127,8 @@ class App extends Component {
           ],
         ]
       ],
-      btnText: 'Start'
+      btnText: 'Start',
+      gameOver: false
     }
   }
 
@@ -178,12 +179,13 @@ class App extends Component {
     if (isCollade == 'false') {
       this.setState({ posY: ++posY, step: ++step });
     } else {
-      this.setState({ posY: 0, board: [...temp], posX: 4 });
-      this.getPiece();
-      if (posY == 0) {
+      if (posY < 1) {
         clearInterval(this.timerId);
-        this.setState({ btnText: 'New Game?' });
+        this.setState({ btnText: 'New Game?', gameOver: true });
         alert('GAME OVER');
+      } else {
+        this.setState({ posY: 0, board: [...temp], posX: 4 });
+        this.getPiece();
       }
     }
   }
@@ -235,8 +237,9 @@ class App extends Component {
   }
 
   start = () => {
-    if (this.timerId === undefined) {
+    if (this.timerId === undefined || this.state.gameOver == true) {
       this.getPiece();
+      this.setState({ gameOver: false, board: JSON.parse(JSON.stringify(new Array(20).fill(new Array(10).fill(0)))) });
       this.timerId = setInterval( () => {
         this.down();
         this.draw();
