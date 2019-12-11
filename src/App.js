@@ -178,13 +178,13 @@ class App extends Component {
     if (isCollade == 'false') {
       this.setState({ posY: ++posY, step: ++step });
     } else {
+      this.setState({ posY: 0, board: [...temp], posX: 4 });
+      this.getPiece();
       if (posY == 0) {
         clearInterval(this.timerId);
         this.setState({ btnText: 'New Game?' });
         alert('GAME OVER');
       }
-      this.setState({ posY: 0, board: [...temp], posX: 4 });
-      this.getPiece();
     }
   }
 
