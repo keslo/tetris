@@ -5,7 +5,7 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      board: [
+      /*board: [
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
@@ -26,7 +26,8 @@ class App extends Component {
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0,0]
-      ],
+      ],*/
+      board:JSON.parse(JSON.stringify(new Array(20).fill(new Array(10).fill(0)))),
       temp: [],
       score: 0,
       posX: 4,
@@ -125,6 +126,28 @@ class App extends Component {
             [1,1,0],
             [1,0,0]
           ],
+        ],
+        [ // T
+          [
+            [0,1,0],
+            [1,1,1],
+            [0,0,0]
+          ],
+          [
+            [0,1,0],
+            [0,1,1],
+            [0,1,0]
+          ],
+          [
+            [0,0,0],
+            [1,1,1],
+            [0,1,0]
+          ],
+          [
+            [0,1,0],
+            [1,1,0],
+            [0,1,0]
+          ],
         ]
       ],
       btnText: 'Start',
@@ -141,8 +164,6 @@ class App extends Component {
         // вычисляем текущую координату элемента фигуры
         let x = posX + dX + iX;
         let y = posY + dY + iY;
-        //console.log('posY=' +posY, ' y= '+y, ' dY=' +dY, ' iY=' +iY);
-        //console.log('posX=' +posX, ' x= '+x, ' dX=' +dX, ' iX=' +iX);
         // проверяем на выход за края
         if (x < 0 || x > width-1 || y >= height) return 'true height';
         // если отрицательный Y, то норм
@@ -160,9 +181,6 @@ class App extends Component {
     let temp = JSON.parse(JSON.stringify(board)); 
     for (var y=0; y<piece.length; y++) {
       for (var x=0; x<piece[y].length; x++) {
-        //console.log(temp[y+posY][x+posX]);
-        //console.log('y=' +piece.length, '; x=' +piece[y].length);
-        //console.log(temp[y+posY][x+posX]);
         if (temp[y+posY] !== undefined) {
           if (temp[y+posY][x+posX] !== undefined) {
             temp[y+posY][x+posX] = board[y+posY][x+posX] ? 1 : piece[y][x];
@@ -237,9 +255,10 @@ class App extends Component {
   }
 
   start = () => {
+    var { width, height } = this.state;
     if (this.timerId === undefined || this.state.gameOver == true) {
       this.getPiece();
-      this.setState({ gameOver: false, board: JSON.parse(JSON.stringify(new Array(20).fill(new Array(10).fill(0)))) });
+      this.setState({ gameOver: false, board: JSON.parse(JSON.stringify(new Array(height).fill(new Array(width).fill(0)))) });
       this.timerId = setInterval( () => {
         this.down();
         this.draw();
@@ -250,19 +269,14 @@ class App extends Component {
   }
 
   componentDidMount = () => {
+    // инициализация игрового поля
+    //this.setState({ temp: JSON.parse(JSON.stringify(new Array(this.state.height).fill(new Array(this.state.width).fill(0)))) });
+    // инициализация действий клавиатуры
     document.addEventListener('keydown', (e) => {
       this.move(e);
       this.rotate(e);
       this.draw();
     })
-    // // инициализация первого компонента
-    // //this.setState({ piece: this.state.pieces[this.state.pieceType][this.state.pieceVar].slice() });
-    // this.getPiece();
-    // this.timerId = setInterval( () => {
-    //   this.down();
-    //   this.draw();
-    //   this.check();
-    // }, 200);
     this.draw();
   }
 
