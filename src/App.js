@@ -35,8 +35,8 @@ class App extends Component {
       height: 20,
       step: 0,
       piece: [],
-      pieceVar: 0,
-      pieceType: 0,
+      pieceVar: 0,  // исполнение фигуры
+      pieceType: 0, // фигура
       pieces: [
         [ // stick
           [
@@ -51,8 +51,83 @@ class App extends Component {
             [0,1,0,0],
             [0,1,0,0]
           ]
+        ],
+        [ // square
+          [
+            [1,1],
+            [1,1]
+          ]
+        ],
+        [ // |__
+          [
+            [1,0,0],
+            [1,1,1],
+            [0,0,0]
+          ],
+          [
+            [0,1,1],
+            [0,1,0],
+            [0,1,0]
+          ],
+          [
+            [0,0,0],
+            [1,1,1],
+            [0,0,1]
+          ],
+          [
+            [0,1,0],
+            [0,1,0],
+            [1,1,0]
+          ]
+        ],
+        [ // __|
+          [
+            [0,0,1],
+            [1,1,1],
+            [0,0,0]
+          ],
+          [
+            [0,1,0],
+            [0,1,0],
+            [0,1,1]
+          ],
+          [
+            [0,0,0],
+            [1,1,1],
+            [1,0,0]
+          ],
+          [
+            [1,1,0],
+            [0,1,0],
+            [0,1,0]
+          ],
+        ],
+        [ // Z_RIGHT
+          [
+            [0,1,1],
+            [1,1,0],
+            [0,0,0]
+          ],
+          [
+            [0,1,0],
+            [0,1,1],
+            [0,0,1]
+          ]
+        ],
+        [ // Z_LEFT
+          [
+            [1,1,0],
+            [0,1,1],
+            [0,0,0]
+          ],
+          [
+            [0,1,0],
+            [1,1,0],
+            [1,0,0]
+          ],
         ]
-      ]
+      ],
+      btnText: 'Start'
     }
   }
 
@@ -87,8 +162,8 @@ class App extends Component {
         //console.log(temp[y+posY][x+posX]);
         //console.log('y=' +piece.length, '; x=' +piece[y].length);
         //console.log(temp[y+posY][x+posX]);
-        if (temp[y+posY] != undefined) {
-          if (temp[y+posY][x+posX] != undefined) {
+        if (temp[y+posY] !== undefined) {
+          if (temp[y+posY][x+posX] !== undefined) {
             temp[y+posY][x+posX] = board[y+posY][x+posX] ? 1 : piece[y][x];
           } 
         }
@@ -100,16 +175,16 @@ class App extends Component {
   down = () => {
     let { posX, posY, piece, step, board, temp } = this.state
     let isCollade = this.collide(0, 1, piece);
-    //console.log(isCollade);
     if (isCollade == 'false') {
       this.setState({ posY: ++posY, step: ++step });
     } else {
-      //console.log(temp);
       if (posY == 0) {
         clearInterval(this.timerId);
-        //alert('GAME OVER');
+        this.setState({ btnText: 'New Game?' });
+        alert('GAME OVER');
       }
       this.setState({ posY: 0, board: [...temp], posX: 4 });
+      this.getPiece();
     }
   }
 
@@ -138,7 +213,6 @@ class App extends Component {
       newBoard.unshift(new Array(10).fill(0));
       incScore++;
     }
-    console.log(incScore);
     this.setState({ board: newBoard, score: score+incScore });
   }
 
@@ -153,21 +227,44 @@ class App extends Component {
     }
   }
 
+  getPiece = () => {
+    var { pieces } = this.state;
+    var pieceType = Math.round((pieces.length-1) * Math.random());
+    var pieceVar  = Math.round((pieces[pieceType].length-1) * Math.random());
+    this.setState({ pieceType, pieceVar, piece: pieces[pieceType][pieceVar] });
+  }
+
+  start = () => {
+    if (this.timerId === undefined) {
+      this.getPiece();
+      this.timerId = setInterval( () => {
+        this.down();
+        this.draw();
+        this.check();
+     }, 200);
+    }
+    this.setState({ btnText: 'YO! :)' });
+  }
+
   componentDidMount = () => {
     document.addEventListener('keydown', (e) => {
       this.move(e);
       this.rotate(e);
-    })
-    this.setState({ piece: this.state.pieces[this.state.pieceType][this.state.pieceVar].slice() });
-    this.timerId = setInterval( () => {
-      this.down();
       this.draw();
-      this.check();
-    }, 500);
+    })
+    // // инициализация первого компонента
+    // //this.setState({ piece: this.state.pieces[this.state.pieceType][this.state.pieceVar].slice() });
+    // this.getPiece();
+    // this.timerId = setInterval( () => {
+    //   this.down();
+    //   this.draw();
+    //   this.check();
+    // }, 200);
+    this.draw();
   }
 
   render() {
-    var { temp, score } = this.state;
+    var { temp, score, btnText } = this.state;
     var html = temp.map((row,i) => {
       return <div className="row" key={i}>
         { row.map((col, j) => <div className={ col ? "brick on" : "brick" } key={j}></div> ) }
@@ -175,8 +272,13 @@ class App extends Component {
     })
     return (
       <div className="App">
-        <h2>Score: { score }</h2>
+      <div className="header">
+        <span>Score: { score }</span>
+        <button onClick={this.start}>{ btnText }</button>
+      </div>
+      <div className="board">
         { html }
+      </div>
       </div>
     )
   }

@@ -1,7 +1,34 @@
 .App {
   width: 400px;
   margin: 0 auto;
-  border: 1px solid #999;
+}
+.header span {
+  font-size: 36px;
+  display: inline-block;
+  width: 50%;
+}
+.header button {
+  display: inline-block;
+  padding: 5px;
+  width: 50%;
+  font-size: 24px;
+  margin: 0 0 10px 0;
+  text-align: center;
+  text-decoration: none;
+  background: #2b995b;
+  border: 1px solid #217e4a;
+  border-radius: 4px;
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.075);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 1px 2px rgba(0,0,0,0.08);
+}
+.header button:hover {
+  cursor: pointer;
+}
+.board {
+  width: 400px;
+  border: 1px solid #003300;
+  border-radius: 5px;
 }
 .row {
   display: block;
@@ -11,9 +38,24 @@
   width: 40px;
   height: 40px;
   box-sizing: border-box;
-  border: 1px solid #999;
+  border: 1px solid #003300;
   display: inline-block;
 }
 .on {
-  background-color: #c5d9c3;
+  position: relative;
+  background: #006600;
+}
+.on::after {
+  content: '';
+  position: absolute;
+  width:20px;;
+  height:20px;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-left: 10px solid #20a020;
+  border-right: 10px solid #024402;
+  border-top: 10px solid #20a020;
+  border-bottom: 10px solid #024402;
 }
