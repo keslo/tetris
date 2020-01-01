@@ -1,6 +1,9 @@
 import React, { Component }  from 'react';
 import './App.css';
-import initialState from './initialState'
+import initialState from './state/initialState'
+import Header from './components/Header'
+import Board from './components/Board'
+import Brick from './components/Brick'
 
 class App extends Component {
   constructor(props) {
@@ -15,7 +18,7 @@ class App extends Component {
     for (let iY=0; iY<piece.length;iY++) {
       for (let iX=0; iX<piece[iY].length; iX++) {
         // если пустая ячейка, то идем дальше
-        if (piece[iY][iX] == 0) continue ;
+        if (piece[iY][iX] === 0) continue ;
         // вычисляем текущую координату элемента фигуры
         let x = posX + dX + iX;
         let y = posY + dY + iY;
@@ -23,16 +26,16 @@ class App extends Component {
         if (x < 0 || x > width-1 || y >= height) return 'true height';
         // если отрицательный Y, то норм
         if (y <= 0) continue;
-        // проверяем столкновение с board
-        if (board[y][x] == 1) return 'true board';
+        // проверяем переполнение фигур по вертикали
+        if (board[y][x] === 1) return 'true board';
       }
     }
-
     return 'false';
   }
 
+
   draw = () => {
-    let { board, posX, posY, piece, step } = this.state;
+    let { board, posX, posY, piece } = this.state;
     let temp = JSON.parse(JSON.stringify(board)); 
     for (var y=0; y<piece.length; y++) {
       for (var x=0; x<piece[y].length; x++) {
@@ -47,9 +50,9 @@ class App extends Component {
   }
 
   down = () => {
-    let { posX, posY, piece, step, board, temp } = this.state
+    let { posY, piece, temp, step } = this.state
     let isCollade = this.collide(0, 1, piece);
-    if (isCollade == 'false') {
+    if (isCollade === 'false') {
       this.setState({ posY: ++posY, step: ++step });
     } else {
       if (posY < 1) {
@@ -64,21 +67,21 @@ class App extends Component {
   }
 
   move = (e) => {
-    let { piece, posX, temp } = this.state;
+    let { piece, posX } = this.state;
     let dX = 0;
-    if (e.keyCode == '37' ) { // Left
+    if (e.keyCode === '37' ) { // Left
       dX = -1;
-    } else if (e.keyCode == '39') { // Right
+    } else if (e.keyCode === '39') { // Right
       dX = 1;
     }
     var isCollide = this.collide(dX, 0, piece);
-    if (isCollide == 'false') {
+    if (isCollide === 'false') {
       this.setState({ posX: posX+dX });
     }
   }
 
   check = () => {
-    var { board, width, height, score } = this.state;
+    var { board, height, score } = this.state;
     var emptyRow = new Array(10).fill('1').join('');
     var incScore = 0;
     var newBoard = board.filter((el) => {
@@ -92,11 +95,11 @@ class App extends Component {
   }
 
   rotate = (e) => {
-    if (e.keyCode == '38' ) { // Up
+    if (e.keyCode === '38' ) { // Up
       e.preventDefault();
-      var { pieceVar, pieceType, piece, pieces } =  this.state;
+      var { pieceVar, pieceType, pieces } =  this.state;
       var newVar = ++pieceVar % pieces[pieceType].length;
-      if (this.collide(0, 0, pieces[pieceType][newVar]) == 'false') {
+      if (this.collide(0, 0, pieces[pieceType][newVar]) === 'false') {
         this.setState({ pieceVar: newVar, piece: pieces[pieceType][newVar] });
       }
     }
@@ -111,7 +114,7 @@ class App extends Component {
 
   start = () => {
     var { width, height } = this.state;
-    if (this.timerId === undefined || this.state.gameOver == true) {
+    if (this.timerId === undefined || this.state.gameOver === true) {
       this.getPiece();
       this.setState({ gameOver: false, board: JSON.parse(JSON.stringify(new Array(height).fill(new Array(width).fill(0)))) });
       this.timerId = setInterval( () => {
@@ -120,12 +123,10 @@ class App extends Component {
         this.check();
      }, 200);
     }
-    this.setState({ btnText: 'YO! :)' });
+    this.setState({ btnText: 'GO!' });
   }
 
   componentDidMount = () => {
-    // инициализация игрового поля
-    //this.setState({ temp: JSON.parse(JSON.stringify(new Array(this.state.height).fill(new Array(this.state.width).fill(0)))) });
     // инициализация действий клавиатуры
     document.addEventListener('keydown', (e) => {
       this.move(e);
@@ -133,24 +134,20 @@ class App extends Component {
       this.draw();
     })
     this.draw();
+    console.log(this.collide);
   }
 
   render() {
     var { temp, score, btnText } = this.state;
     var html = temp.map((row,i) => {
       return <div className="row" key={i}>
-        { row.map((col, j) => <div className={ col ? "brick on" : "brick" } key={j}></div> ) }
+        { row.map((col, j) => <Brick fill={ col } key={ j } /> ) }
       </div>
     })
     return (
       <div className="App">
-      <div className="header">
-        <span>Score: { score }</span>
-        <button onClick={this.start}>{ btnText }</button>
-      </div>
-      <div className="board">
-        { html }
-      </div>
+        <Header score={ score } btnText={ btnText } start={ this.start } />
+        <Board html={ html }/>
       </div>
     )
   }
