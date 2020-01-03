@@ -69,9 +69,9 @@ class App extends Component {
   move = (e) => {
     let { piece, posX } = this.state;
     let dX = 0;
-    if (e.keyCode === '37' ) { // Left
+    if (e.keyCode === 37 ) { // Left
       dX = -1;
-    } else if (e.keyCode === '39') { // Right
+    } else if (e.keyCode === 39) { // Right
       dX = 1;
     }
     var isCollide = this.collide(dX, 0, piece);
@@ -95,7 +95,7 @@ class App extends Component {
   }
 
   rotate = (e) => {
-    if (e.keyCode === '38' ) { // Up
+    if (e.keyCode === 38 ) { // Up
       e.preventDefault();
       var { pieceVar, pieceType, pieces } =  this.state;
       var newVar = ++pieceVar % pieces[pieceType].length;
@@ -121,7 +121,7 @@ class App extends Component {
         this.down();
         this.draw();
         this.check();
-     }, 200);
+     }, 800);
     }
     this.setState({ btnText: 'GO!' });
   }
@@ -134,14 +134,13 @@ class App extends Component {
       this.draw();
     })
     this.draw();
-    console.log(this.collide);
   }
 
   render() {
     var { temp, score, btnText } = this.state;
     var html = temp.map((row,i) => {
       return <div className="row" key={i}>
-        { row.map((col, j) => <Brick fill={ col } key={ j } /> ) }
+        { row.map((col, j) => <Brick fill={ col } key={ i*10+j } /> ) }
       </div>
     })
     return (

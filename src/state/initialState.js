@@ -1,5 +1,6 @@
 export default {
       board:JSON.parse(JSON.stringify(new Array(20).fill(new Array(10).fill(0)))),
+      //board: (new Array(20).fill(new Array(10).fill(0))).slice(),
       temp: [],
       score: 0,
       posX: 4,
